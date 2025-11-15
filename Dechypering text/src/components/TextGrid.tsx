@@ -52,7 +52,6 @@ export const TextGrid: React.FC<Props> = ({
   onToggleSelectMode,
   showNgrams,
   onToggleNgrams,
-  pattern,
   onPatternChange,
   patternMatchIndices,
 }) => {
