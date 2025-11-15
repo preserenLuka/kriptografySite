@@ -1,0 +1,160 @@
+.wrapper {
+  background: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.total {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.chartsRow {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.chartWrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.chartTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}
+
+.chartTitle {
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.yLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* glavni layout grafa */
+
+.chart {
+  display: flex;
+  width: 100%;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.5rem;
+}
+
+/* Y-os */
+
+.yAxis {
+  width: 40px;
+  height: 260px;
+  padding-right: 0.5rem;
+}
+
+.yAxisInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.yTick {
+  transform: translateY(3px);
+}
+
+/* Stolpci */
+
+.bars {
+  flex: 1;
+  height: 260px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-left: 0.6rem;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+}
+
+.barWrapper {
+  position: relative;
+  width: 26px;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar {
+  width: 100%;
+  background: var(--bar-normal);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.barActive {
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+
+.value {
+  position: absolute;
+  top: -1.4rem;
+  font-size: 0.7rem;
+  color: var(--text-main);
+}
+
+.letter {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Referenčni graf */
+
+.refHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.refSelect {
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-main);
+  padding: 0.1rem 0.4rem;
+}
+
+/* cross-highlight v referenčnem grafu */
+
+.columnMatch .bar {
+  background: var(--accent);
+}
+
+.columnSameLetter .bar {
+  background: var(--accent-strong);
+}

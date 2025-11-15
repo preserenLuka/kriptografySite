@@ -1,0 +1,48 @@
+.panel {
+  background: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.grid {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  column-gap: 0.5rem;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.original {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 0.15rem;
+}
+
+.input {
+  width: 100%;
+  max-width: 34px;
+  text-align: center;
+  border: none;
+  border-bottom: 3px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-main);
+  padding: 0.1rem 0;
+  font-size: 1.1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+.hint {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}

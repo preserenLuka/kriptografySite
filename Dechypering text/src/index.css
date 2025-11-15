@@ -1,0 +1,127 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+/* ================== THEME ROOT ================== */
+
+.theme-root {
+  min-height: 100vh;
+}
+
+/* ---------- Dark (default) ---------- */
+
+.theme-root.theme-dark {
+  --bg-body: #020617;
+  --bg-card: #020617;
+  --border-subtle: #1f2937;
+  --border-strong: #374151;
+
+  --accent: #60a5fa;
+  --accent-strong: #3b82f6;
+  --highlight: #facc15;
+
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --bar-normal: #4b5563;
+
+  --overlay-bg: rgba(15, 23, 42, 0.85);
+
+  background-color: var(--bg-body);
+  color: var(--text-main);
+}
+
+/* ---------- Dim / softer contrast dark ---------- */
+
+.theme-root.theme-dim {
+  --bg-body: #020617;
+  --bg-card: #030712;
+  --border-subtle: #111827;
+  --border-strong: #374151;
+
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --highlight: #f97316;
+
+  --text-main: #e9ebef;
+  --text-muted: #afb5c0;
+
+  --bar-normal: #4b5563;
+
+  --overlay-bg: rgba(15, 23, 42, 0.8);
+
+  background-color: var(--bg-body);
+  color: var(--text-main);
+}
+
+/* ---------- Light / high contrast ---------- */
+
+.theme-root.theme-light {
+  --bg-body: #f3f4f6;
+  --bg-card: #ffffff;
+  --border-subtle: #d1d5db;
+  --border-strong: #9ca3af;
+
+  --accent: #2563eb;
+  --accent-strong: #f9a914d0;
+  --highlight: #f97316;
+
+  --text-main: #111827;
+  --text-muted: #6b7280;
+
+  --bar-normal: #9ca3af;
+
+  --overlay-bg: rgba(15, 23, 42, 0.3);
+
+  background-color: var(--bg-body);
+  color: var(--text-main);
+}
+
+/* ================== THEME TOOLBAR ================== */
+
+.theme-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 1.5rem 0.5rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent 80%);
+}
+
+.theme-toolbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.theme-toolbar label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.theme-toolbar select {
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  padding: 0.1rem 0.5rem;
+}

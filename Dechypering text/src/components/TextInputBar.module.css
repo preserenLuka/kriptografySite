@@ -1,0 +1,77 @@
+.bar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.bar:hover {
+  background: var(--border-subtle);
+}
+
+.preview {
+  color: var(--accent);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  width: min(900px, 95vw);
+  max-height: 90vh;
+  background: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--border-strong);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 200px;
+  max-height: 60vh;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-family: monospace;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.actions button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.save {
+  background: var(--accent-strong);
+  color: white;
+}
+
+.save:hover {
+  background: var(--accent);
+}

@@ -1,0 +1,89 @@
+.wrapper {
+  background: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.smallButton {
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+}
+
+.smallButtonActive {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  user-select: none; /* brez normalnega highlighta */
+}
+
+.row {
+  display: grid;
+  gap: 0.15rem;
+  user-select: none;
+}
+
+.box {
+  border-radius: 0.4rem;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-card);
+  color: var(--text-main);
+  transition: background 0.15s, border-color 0.15s, transform 0.05s,
+    box-shadow 0.1s;
+  user-select: none;
+}
+
+.boxMapped {
+  background: var(--accent-strong);
+  border-color: var(--accent);
+}
+
+.boxHover {
+  box-shadow: 0 0 0 2px var(--highlight);
+  border-color: var(--highlight);
+}
+
+.boxMatch {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.box:hover {
+  transform: translateY(-1px);
+}
+
+.spaceBox {
+  border-radius: 0.4rem;
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  user-select: none;
+}

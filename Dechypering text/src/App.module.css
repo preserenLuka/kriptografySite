@@ -1,0 +1,30 @@
+.app {
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.mainContent {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.topSection {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.topLeft {
+  flex: 1.8;
+}
+
+.topRight {
+  flex: 1;
+  min-width: 260px;
+}
+
+.fullWidth {
+  flex: 1;
+}
