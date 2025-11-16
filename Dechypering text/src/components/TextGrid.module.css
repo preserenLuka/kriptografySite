@@ -45,17 +45,14 @@
   user-select: none;
 }
 
-/* base cell styles */
-
 .cell {
   aspect-ratio: 1 / 1;
   border-radius: 0.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative; /* needed for space marker */
 }
-
-/* letter boxes */
 
 .box {
   border: 1px solid var(--border-subtle);
@@ -85,18 +82,55 @@
   transform: translateY(-1px);
 }
 
-/* space characters */
-
 .spaceBox {
   border: 1px solid transparent;
   color: var(--text-muted);
   font-size: 0.8em;
 }
 
-/* empty filler so last row width is same as others */
-
 .emptyCell {
   aspect-ratio: 1 / 1;
   border-radius: 0.4rem;
   border: 1px solid transparent;
+}
+
+/* suspected spaces */
+
+.cellSpaceMode {
+  cursor: default;
+}
+
+.spaceMarker {
+  position: absolute;
+  left: -4px; /* more to the left */
+  top: 6%;
+  width: 4px; /* bigger hitbox */
+  height: 88%;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.5); /* ghost line */
+  opacity: 0; /* fully hidden by default */
+}
+
+.spaceMarkerActive {
+  background: #f97316; /* strong color when it's an actual suspected space */
+  opacity: 0.8;
+}
+
+/* when space mode is ON we rely on JS to show ghost markers;
+   the actual orange ones are always visible via .spaceMarkerActive */
+
+.spaceMarkerX {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  font-size: 10px;
+  line-height: 1;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+}
+
+.spaceMarkerActive:hover .spaceMarkerX {
+  opacity: 1;
 }

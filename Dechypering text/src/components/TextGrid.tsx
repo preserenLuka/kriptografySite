@@ -16,6 +16,13 @@ interface Props {
   onPatternChange: (pattern: string) => void;
   patternMatchIndices: Set<number>;
   suspectedHighlightColors?: Record<number, string>;
+
+  // suspected spaces
+  spaceMode: boolean;
+  onToggleSpaceMode: () => void;
+  suspectedSpacePositions: Set<number>;
+  onAddSpace: (index: number) => void;
+  onRemoveSpace: (index: number) => void;
 }
 
 // layout for whole text
@@ -39,9 +46,15 @@ export const TextGrid: React.FC<Props> = ({
   showSuspected,
   onToggleNgrams,
   onToggleSuspected,
+  pattern,
   onPatternChange,
   patternMatchIndices,
   suspectedHighlightColors,
+  spaceMode,
+  onToggleSpaceMode,
+  suspectedSpacePositions,
+  onAddSpace,
+  onRemoveSpace,
 }) => {
   const { charsPerRow, fontSize } = getLayout(text.length);
 
@@ -102,6 +115,15 @@ export const TextGrid: React.FC<Props> = ({
           <button
             type="button"
             className={`${styles.smallButton} ${
+              spaceMode ? styles.smallButtonActive : ""
+            }`}
+            onClick={onToggleSpaceMode}
+          >
+            Suspected spaces
+          </button>
+          <button
+            type="button"
+            className={`${styles.smallButton} ${
               selectMode ? styles.smallButtonActive : ""
             }`}
             onClick={onToggleSelectMode}
@@ -151,6 +173,8 @@ export const TextGrid: React.FC<Props> = ({
 
                 const highlightColor = suspectedHighlightColors?.[globalIndex];
 
+                const hasSpaceHere = suspectedSpacePositions.has(globalIndex);
+
                 const title = hasMapping ? `${ch} → ${mapped}` : ch;
 
                 const classNames = [
@@ -159,9 +183,12 @@ export const TextGrid: React.FC<Props> = ({
                   hasMapping ? styles.boxMapped : "",
                   isHovered ? styles.boxHover : "",
                   isMatch ? styles.boxMatch : "",
+                  spaceMode ? styles.cellSpaceMode : "",
                 ]
                   .filter(Boolean)
                   .join(" ");
+
+                const showMarker = spaceMode || hasSpaceHere;
 
                 return (
                   <div
@@ -179,6 +206,41 @@ export const TextGrid: React.FC<Props> = ({
                     }}
                     onMouseEnter={() => extendSelection(globalIndex)}
                   >
+                    {showMarker && (
+                      <div
+                        className={`${styles.spaceMarker} ${
+                          hasSpaceHere ? styles.spaceMarkerActive : ""
+                        }`}
+                        style={{
+                          cursor: spaceMode ? "pointer" : "default",
+                        }}
+                        onClick={
+                          spaceMode
+                            ? (e) => {
+                                e.stopPropagation();
+                                if (hasSpaceHere) {
+                                  onRemoveSpace(globalIndex);
+                                } else {
+                                  onAddSpace(globalIndex);
+                                }
+                              }
+                            : undefined
+                        }
+                        title={
+                          spaceMode
+                            ? hasSpaceHere
+                              ? "Click to remove suspected space"
+                              : "Click to add suspected space before this letter"
+                            : hasSpaceHere
+                            ? "Suspected space"
+                            : undefined
+                        }
+                      >
+                        {spaceMode && hasSpaceHere && (
+                          <span className={styles.spaceMarkerX}>×</span>
+                        )}
+                      </div>
+                    )}
                     {displayChar}
                   </div>
                 );

@@ -27,6 +27,16 @@ const MAX_SUSPECTED_LENGTH = 25;
 // colors for suspected words (cycled if more than 5)
 const SUSPECT_COLORS = ["#f97316", "#22c55e", "#eab308", "#ec4899", "#06b6d4"];
 
+// localStorage key
+const STORAGE_KEY = "cipher-tool-state-v1";
+
+interface PersistedState {
+  text: string;
+  mapping: Mapping;
+  suspectedWords: string[];
+  suspectedSpaces: number[];
+}
+
 function findPatternMatches(text: string, pattern: string): PatternMatches {
   const result: PatternMatches = { starts: [], indices: new Set<number>() };
   if (!pattern) return result;
@@ -56,7 +66,7 @@ function findPatternMatches(text: string, pattern: string): PatternMatches {
   return result;
 }
 
-// exact matches, no wildcards, used for suspected words
+// exact matches, used for suspected words highlighting
 function findExactMatches(text: string, pattern: string): number[] {
   const res: number[] = [];
   const t = text.toLowerCase();
@@ -91,6 +101,60 @@ function App() {
   const [showNgrams, setShowNgrams] = useState(false);
   const [showSuspected, setShowSuspected] = useState(false);
   const [suspectedWords, setSuspectedWords] = useState<string[]>([]);
+
+  // suspected spaces (indices in text where a space is suspected BEFORE the char)
+  const [spaceMode, setSpaceMode] = useState(false);
+  const [suspectedSpaces, setSuspectedSpaces] = useState<number[]>([]);
+
+  // flag to avoid saving before we’ve loaded existing state
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  // ---------- LOAD FROM LOCALSTORAGE ONCE ----------
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<PersistedState> | null;
+        if (parsed) {
+          if (typeof parsed.text === "string") {
+            setText(parsed.text);
+          }
+          if (parsed.mapping && typeof parsed.mapping === "object") {
+            setMapping(parsed.mapping);
+          }
+          if (Array.isArray(parsed.suspectedWords)) {
+            setSuspectedWords(parsed.suspectedWords);
+          }
+          if (Array.isArray(parsed.suspectedSpaces)) {
+            setSuspectedSpaces(parsed.suspectedSpaces.map((n) => Number(n)));
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load cipher state from localStorage", err);
+    } finally {
+      setHasLoaded(true);
+    }
+  }, []);
+
+  // ---------- SAVE TO LOCALSTORAGE WHEN STATE CHANGES ----------
+  useEffect(() => {
+    if (!hasLoaded) return; // don’t overwrite storage before initial load
+
+    const stateToSave: PersistedState = {
+      text,
+      mapping,
+      suspectedWords,
+      suspectedSpaces,
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (err) {
+      console.error("Failed to save cipher state to localStorage", err);
+    }
+  }, [hasLoaded, text, mapping, suspectedWords, suspectedSpaces]);
+
+  // ---------- REST OF LOGIC ----------
 
   const handleMappingChange = (from: string, to: string) => {
     setMapping((prev) => ({
@@ -140,6 +204,20 @@ function App() {
     });
   };
 
+  const toggleSpaceMode = () => {
+    setSpaceMode((prev) => !prev);
+  };
+
+  const handleAddSpace = (index: number) => {
+    setSuspectedSpaces((prev) =>
+      prev.includes(index) ? prev : [...prev, index]
+    );
+  };
+
+  const handleRemoveSpace = (index: number) => {
+    setSuspectedSpaces((prev) => prev.filter((i) => i !== index));
+  };
+
   const handleAddSuspected = (word: string) => {
     const trimmed = word.trim();
     if (!trimmed) {
@@ -168,12 +246,12 @@ function App() {
     notify.success(`Removed "${word}" from suspected words.`);
   };
 
-  // colors per suspected word (same order)
+  // colors per suspected word
   const suspectedColors = suspectedWords.map(
     (_, idx) => SUSPECT_COLORS[idx % SUSPECT_COLORS.length]
   );
 
-  // map of index -> color for underlines in Text preview
+  // index -> color for underlines in Text preview
   const suspectedHighlightColors: Record<number, string> = {};
   suspectedWords.forEach((word, wordIdx) => {
     const color = suspectedColors[wordIdx];
@@ -185,6 +263,8 @@ function App() {
     });
   });
 
+  const suspectedSpaceSet = new Set<number>(suspectedSpaces);
+
   let panelType: PanelType = "none";
   if (showNgrams) panelType = "ngrams";
   else if (showSuspected) panelType = "suspected";
@@ -194,6 +274,7 @@ function App() {
 
   return (
     <div className={styles.app}>
+      {/* This text is fully controlled by `text`, so it’s now persisted too */}
       <TextInputBar text={text} onChangeText={setText} />
 
       <div className={styles.mainContent}>
@@ -213,6 +294,11 @@ function App() {
               onPatternChange={setPattern}
               patternMatchIndices={patternMatches.indices}
               suspectedHighlightColors={suspectedHighlightColors}
+              spaceMode={spaceMode}
+              onToggleSpaceMode={toggleSpaceMode}
+              suspectedSpacePositions={suspectedSpaceSet}
+              onAddSpace={handleAddSpace}
+              onRemoveSpace={handleRemoveSpace}
             />
           </div>
 
