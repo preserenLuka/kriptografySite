@@ -90,7 +90,7 @@ export const PatternPanel: React.FC<Props> = ({
 
         <button
           type="button"
-          className={styles.Button}
+          className={styles.addButton}
           onClick={handleAddSuspectedClick}
           disabled={!inputValue.trim()}
         >
@@ -98,6 +98,7 @@ export const PatternPanel: React.FC<Props> = ({
         </button>
       </div>
 
+      {/* Previous letters */}
       <div className={styles.neighborBlock}>
         <h4>Most frequent previous letters</h4>
         {beforeStats.length === 0 ? (
@@ -105,11 +106,11 @@ export const PatternPanel: React.FC<Props> = ({
         ) : (
           <ul className={styles.list}>
             {beforeStats.map((n) => (
-              <li key={n.letter}>
+              <li key={n.letter} className={styles.listItem}>
                 <span className={styles.letter}>{n.letter}</span>
-                <span className={styles.count}>{n.count}</span>
+                <span className={styles.count}>{n.count}×</span>
                 <span className={styles.percent}>
-                  {n.percent.toFixed(1).replace(".", ",")}%{" "}
+                  {n.percent.toFixed(1).replace(".", ",")}%
                 </span>
               </li>
             ))}
@@ -117,6 +118,7 @@ export const PatternPanel: React.FC<Props> = ({
         )}
       </div>
 
+      {/* Next letters */}
       <div className={styles.neighborBlock}>
         <h4>Most frequent next letters</h4>
         {afterStats.length === 0 ? (
@@ -124,11 +126,11 @@ export const PatternPanel: React.FC<Props> = ({
         ) : (
           <ul className={styles.list}>
             {afterStats.map((n) => (
-              <li key={n.letter}>
+              <li key={n.letter} className={styles.listItem}>
                 <span className={styles.letter}>{n.letter}</span>
-                <span className={styles.count}>{n.count}</span>
+                <span className={styles.count}>{n.count}×</span>
                 <span className={styles.percent}>
-                  {n.percent.toFixed(1).replace(".", ",")}%{" "}
+                  {n.percent.toFixed(1).replace(".", ",")}%
                 </span>
               </li>
             ))}
