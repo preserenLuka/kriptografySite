@@ -112,8 +112,3 @@
   text-align: right;
   color: var(--text-muted);
 }
-
-/* legacy class if kaj še uporabljaš kje */
-.clearButton {
-  composes: smallButton;
-}

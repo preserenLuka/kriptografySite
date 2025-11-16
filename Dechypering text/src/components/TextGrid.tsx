@@ -39,7 +39,6 @@ export const TextGrid: React.FC<Props> = ({
   showSuspected,
   onToggleNgrams,
   onToggleSuspected,
-  pattern,
   onPatternChange,
   patternMatchIndices,
   suspectedHighlightColors,

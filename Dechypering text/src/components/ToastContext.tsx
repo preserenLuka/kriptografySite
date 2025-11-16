@@ -1,61 +1,111 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type ReactNode,
+} from "react";
 import styles from "./ToastContext.module.css";
 
-export type ToastType = "success" | "error";
-
 interface Toast {
-  id: number;
+  id: string;
   message: string;
-  type: ToastType;
+  type: "success" | "error" | "info";
 }
 
-interface ToastContextValue {
-  notify: {
-    success: (msg: string) => void;
-    error: (msg: string) => void;
-  };
+interface ToastContextType {
+  success: (message: string) => void;
+  error: (message: string) => void;
+  info: (message: string) => void;
 }
 
-const ToastContext = createContext<ToastContextValue | undefined>(undefined);
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const useToast = () => {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error("useToast must be used inside <ToastProvider>");
-  return ctx.notify;
+export const useToast = (): ToastContextType => {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error("useToast must be used within ToastProvider");
+  }
+  return context;
 };
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+interface ToastProviderProps {
+  children: ReactNode;
+}
+
+export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  // keep track of timeout IDs for each toast so we can clear them if needed
+  const timeoutsRef = useRef<Record<string, number>>({});
 
-  const addToast = useCallback((message: string, type: ToastType) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 2500);
+  // cleanup on unmount: clear any pending timeouts to avoid state updates
+  useEffect(() => {
+    return () => {
+      Object.values(timeoutsRef.current).forEach((tid) => {
+        clearTimeout(tid);
+      });
+      timeoutsRef.current = {};
+    };
   }, []);
 
-  const notify = {
-    success: (msg: string) => addToast(msg, "success"),
-    error: (msg: string) => addToast(msg, "error"),
+  const removeToast = useCallback((id: string) => {
+    const tid = timeoutsRef.current[id];
+    if (tid) {
+      clearTimeout(tid);
+      delete timeoutsRef.current[id];
+    }
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const addToast = useCallback(
+    (message: string, type: "success" | "error" | "info") => {
+      const genId = () => {
+        try {
+          if (
+            typeof crypto !== "undefined" &&
+            typeof (crypto as any).randomUUID === "function"
+          ) {
+            return (crypto as any).randomUUID();
+          }
+        } catch (e) {
+          // fallthrough to fallback
+        }
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      };
+
+      const id = genId();
+      setToasts((prev) => [...prev, { id, message, type }]);
+
+      // Auto-remove after 3 seconds and remember the timeout so it can be cleared
+      const tid = window.setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+        delete timeoutsRef.current[id];
+      }, 3000);
+
+      timeoutsRef.current[id] = tid;
+    },
+    []
+  );
+
+  const contextValue: ToastContextType = {
+    success: (message) => addToast(message, "success"),
+    error: (message) => addToast(message, "error"),
+    info: (message) => addToast(message, "info"),
   };
 
   return (
-    <ToastContext.Provider value={{ notify }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
-
       <div className={styles.toastContainer}>
-        {toasts.map((t) => (
+        {toasts.map((toast) => (
           <div
-            key={t.id}
-            className={`${styles.toast} ${
-              t.type === "success" ? styles.success : styles.error
-            }`}
+            key={toast.id}
+            className={`${styles.toast} ${styles[toast.type]}`}
+            onClick={() => removeToast(toast.id)}
           >
-            {t.message}
+            {toast.message}
           </div>
         ))}
       </div>

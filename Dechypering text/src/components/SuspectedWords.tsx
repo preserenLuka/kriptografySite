@@ -14,6 +14,14 @@ export const SuspectedWords: React.FC<Props> = ({
   onRemoveWord,
   colors,
 }) => {
+  // Validate that colors.length matches words.length
+  if (colors.length !== words.length) {
+    console.error(
+      `SuspectedWords: colors.length (${colors.length}) must match words.length (${words.length})`
+    );
+    return null;
+  }
+
   if (!words.length) {
     return (
       <div className={styles.wrapper}>
@@ -30,7 +38,7 @@ export const SuspectedWords: React.FC<Props> = ({
       <h3>Suspected words</h3>
       <div className={styles.list}>
         {words.map((w, idx) => {
-          const color = colors[idx];
+          const color = colors[idx] ?? "#ccc";
 
           return (
             <div key={w} className={styles.wordBlock}>
@@ -68,6 +76,7 @@ export const SuspectedWords: React.FC<Props> = ({
                   type="button"
                   className={styles.removeButton}
                   onClick={() => onRemoveWord(w)}
+                  aria-label={`Remove word ${w}`}
                 >
                   ✕
                 </button>
