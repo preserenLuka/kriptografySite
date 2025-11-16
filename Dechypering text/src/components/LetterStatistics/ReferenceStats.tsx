@@ -68,6 +68,7 @@ const EN_DATA: RefStat[] = [
 interface Props {
   highlightPercent: number | null;
   hoverLetter: string | null;
+  currentPercentMap: Record<string, number>;
 }
 
 export const ReferenceStats: React.FC<Props> = ({
@@ -142,6 +143,9 @@ export const ReferenceStats: React.FC<Props> = ({
             return (
               <div key={s.letter} className={classNames}>
                 <div className={styles.barWrapper}>
+                  <div className={styles.value}>
+                    <div>{s.percent.toFixed(1).replace(".", ",")}%</div>
+                  </div>
                   <div
                     className={styles.bar}
                     style={{
@@ -151,9 +155,6 @@ export const ReferenceStats: React.FC<Props> = ({
                           : "0%",
                     }}
                   />
-                  <span className={styles.value}>
-                    {s.percent.toFixed(1).replace(".", ",")}%
-                  </span>
                 </div>
                 <span className={styles.letter}>{s.letter}</span>
               </div>

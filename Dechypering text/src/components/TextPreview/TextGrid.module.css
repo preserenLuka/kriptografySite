@@ -96,43 +96,30 @@
 
 /* suspected spaces */
 
-.cellSpaceMode {
-  cursor: default;
+.spaceBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #6b7280;
 }
 
-.spaceMarker {
-  position: absolute;
-  left: -4px; /* more to the left */
-  top: 6%;
-  width: 4px; /* bigger hitbox */
-  height: 88%;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.5); /* ghost line */
-  opacity: 0; /* fully hidden by default */
+/* suspected space cell – same shape, just slightly tinted */
+.suspectedSpaceBox {
+  border-color: var(--accent-subtle, #60a5fa);
+  background: rgba(96, 165, 250, 0.06);
 }
 
-.spaceMarkerActive {
-  background: #f97316; /* strong color when it's an actual suspected space */
-  opacity: 0.8;
+.spaceDot {
+  font-size: 0.8rem;
+  line-height: 1;
 }
 
-/* when space mode is ON we rely on JS to show ghost markers;
-   the actual orange ones are always visible via .spaceMarkerActive */
-
+/* small X for removing suspected space when in Suspected spaces mode */
 .spaceMarkerX {
   position: absolute;
-  top: -10px;
-  left: 0;
-  font-size: 10px;
-  line-height: 1;
-  padding: 0 3px;
-  border-radius: 999px;
-  background: #ef4444;
-  color: white;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.spaceMarkerActive:hover .spaceMarkerX {
-  opacity: 1;
+  top: 3px;
+  right: 5px;
+  font-size: 0.7rem;
+  color: #ef4444;
 }

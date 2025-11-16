@@ -1,6 +1,6 @@
 import styles from "./SubstitutionPanel.module.css";
-import type { Mapping } from "../App";
-import { useToast } from "./ToastContext";
+import type { Mapping } from "../state/cipherTypes";
+import { useToast } from "../utils/ToastContext";
 
 export const SLO_ALPHABET = [
   "a",

@@ -3,7 +3,30 @@
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-subtle);
+  width: 100%;
 }
+
+/* ========================= */
+/*   FIX: 2 grafa = 50% + 50%  */
+/* ========================= */
+
+.chartsRow {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 1.5rem;
+
+  /* ključna sprememba */
+  width: 100%;
+}
+
+.chartWrapper {
+  flex: 1 1 50%;
+  min-width: 0; /* omogoča enakomerno delitev */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================= */
 
 .header {
   display: flex;
@@ -15,17 +38,6 @@
 .total {
   font-size: 0.8rem;
   color: var(--text-muted);
-}
-
-.chartsRow {
-  margin-top: 0.6rem;
-  display: flex;
-  gap: 1.5rem;
-}
-
-.chartWrapper {
-  flex: 1;
-  min-width: 0;
 }
 
 .chartTitleRow {
@@ -45,7 +57,7 @@
   color: var(--text-muted);
 }
 
-/* glavni layout grafa */
+/* MAIN CHART AREA */
 
 .chart {
   display: flex;
@@ -54,7 +66,7 @@
   padding-top: 0.5rem;
 }
 
-/* Y-os */
+/* Y axis */
 
 .yAxis {
   width: 40px;
@@ -76,7 +88,7 @@
   transform: translateY(3px);
 }
 
-/* Stolpci */
+/* Bars */
 
 .bars {
   flex: 1;
@@ -97,12 +109,12 @@
 }
 
 .barWrapper {
-  position: relative;
   width: 26px;
   flex: 1;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .bar {
@@ -118,11 +130,16 @@
   transform: translateY(-2px);
 }
 
+/* percentage labels */
+
 .value {
-  position: absolute;
-  top: -1.4rem;
   font-size: 0.7rem;
   color: var(--text-main);
+  text-align: center;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  padding: 8px;
 }
 
 .letter {
@@ -131,7 +148,7 @@
   color: var(--text-muted);
 }
 
-/* Referenčni graf */
+/* reference chart */
 
 .refHeader {
   display: flex;
@@ -148,8 +165,6 @@
   color: var(--text-main);
   padding: 0.1rem 0.4rem;
 }
-
-/* cross-highlight v referenčnem grafu */
 
 .columnMatch .bar {
   background: var(--accent);

@@ -1,5 +1,5 @@
 import styles from "./SuspectedWords.module.css";
-import type { Mapping } from "../App";
+import type { Mapping } from "../../../state/cipherTypes";
 
 interface Props {
   words: string[];

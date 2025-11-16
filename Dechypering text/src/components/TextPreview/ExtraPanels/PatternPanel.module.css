@@ -112,3 +112,27 @@
   text-align: right;
   color: var(--text-muted);
 }
+
+.patternInput {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  font-size: 0 ninerem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+  background: var(--bg-subtle);
+  color: var(--text-main);
+}
+
+.Button {
+  font-size: 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+}
+.Button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}

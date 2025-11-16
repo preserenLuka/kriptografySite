@@ -19,7 +19,7 @@ export const LetterStats: React.FC<Props> = ({
   alphabet,
   onHoverLetter,
 }) => {
-  const { stats, total, maxCount } = computeStats(text, alphabet);
+  const { stats, total, maxCount, percentMap } = computeStats(text, alphabet);
   const ticks = buildTicks(maxCount);
 
   const [hoveredLetter, setHoveredLetter] = useState<string | null>(null);
@@ -69,6 +69,9 @@ export const LetterStats: React.FC<Props> = ({
                     onMouseEnter={() => handleHover(s.letter, s.percent)}
                   >
                     <div className={styles.barWrapper}>
+                      <div className={styles.value}>
+                        {s.percent.toFixed(1).replace(".", ",")}%
+                      </div>
                       <div
                         className={`${styles.bar} ${
                           isHovered ? styles.barActive : ""
@@ -80,9 +83,6 @@ export const LetterStats: React.FC<Props> = ({
                               : "0%",
                         }}
                       />
-                      <span className={styles.value}>
-                        {s.percent.toFixed(1).replace(".", ",")}%
-                      </span>
                     </div>
                     <span className={styles.letter}>
                       {s.letter.toUpperCase()}
@@ -99,6 +99,7 @@ export const LetterStats: React.FC<Props> = ({
           <ReferenceStats
             highlightPercent={hoveredPercent}
             hoverLetter={hoveredLetter}
+            currentPercentMap={percentMap}
           />
         </div>
       </div>
@@ -109,7 +110,12 @@ export const LetterStats: React.FC<Props> = ({
 function computeStats(
   text: string,
   alphabet: string[]
-): { stats: Stat[]; total: number; maxCount: number } {
+): {
+  stats: Stat[];
+  total: number;
+  maxCount: number;
+  percentMap: Record<string, number>;
+} {
   const counts: Record<string, number> = {};
   let total = 0;
 
@@ -120,16 +126,18 @@ function computeStats(
     }
   }
 
-  const stats: Stat[] = Object.entries(counts).map(([letter, count]) => ({
-    letter,
-    count,
-    percent: total ? (count / total) * 100 : 0,
-  }));
+  const percentMap: Record<string, number> = {};
+
+  const stats: Stat[] = Object.entries(counts).map(([letter, count]) => {
+    const percent = total ? (count / total) * 100 : 0;
+    percentMap[letter] = percent;
+    return { letter, count, percent };
+  });
 
   stats.sort((a, b) => b.count - a.count);
   const maxCount = stats.length ? stats[0].count : 0;
 
-  return { stats, total, maxCount };
+  return { stats, total, maxCount, percentMap };
 }
 
 function buildTicks(maxCount: number): number[] {
