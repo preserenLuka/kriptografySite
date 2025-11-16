@@ -8,11 +8,40 @@
   gap: 0.75rem;
 }
 
+/* header with title + buttons on the right */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.smallButton {
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+}
+
+.smallButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* main pattern block */
+
 .patternBlock {
-  border-radius: 0.5rem;
   padding: 0.5rem 0.6rem;
-  border: 1px dashed var(--border-subtle);
-  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -21,66 +50,70 @@
 .patternRow {
   display: flex;
   justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.label {
+  color: var(--text-muted);
+}
+
+.value {
+  font-family: monospace;
 }
 
 .hint {
-  margin-top: 0.1rem;
+  margin-top: 0.25rem;
   font-size: 0.75rem;
   color: var(--text-muted);
 }
 
-.clearButton {
-  align-self: flex-end;
-  margin-top: 0.3rem;
-  font-size: 0.75rem;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-card);
-  color: var(--text-main);
-  padding: 0.2rem 0.6rem;
-  cursor: pointer;
-}
+/* neighbors */
 
 .neighborBlock {
-  font-size: 0.8rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.45rem;
 }
 
 .neighborBlock h4 {
   margin: 0 0 0.25rem;
+  font-size: 0.85rem;
 }
 
 .empty {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
+/* list of neighbor letters */
+
 .list {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
 }
 
-.list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.listItem {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   gap: 0.4rem;
+  font-size: 0.8rem;
   padding: 0.1rem 0;
 }
 
 .letter {
-  width: 1.2rem;
-  text-align: center;
-  font-weight: 600;
+  font-family: monospace;
 }
 
 .count {
-  width: 2rem;
   text-align: right;
 }
 
 .percent {
-  width: 3rem;
   text-align: right;
   color: var(--text-muted);
+}
+
+/* legacy class if kaj še uporabljaš kje */
+.clearButton {
+  composes: smallButton;
 }

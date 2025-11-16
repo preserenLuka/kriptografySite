@@ -9,39 +9,24 @@ interface Props {
   selectMode: boolean;
   onToggleSelectMode: () => void;
   showNgrams: boolean;
+  showSuspected: boolean;
   onToggleNgrams: () => void;
+  onToggleSuspected: () => void;
   pattern: string;
   onPatternChange: (pattern: string) => void;
   patternMatchIndices: Set<number>;
+  suspectedHighlightColors?: Record<number, string>;
 }
 
-// določi layout glede na dolžino teksta
+// layout for whole text
 function getLayout(length: number) {
-  // številke lahko po občutku še malo spremeniš
   if (length <= 150) {
-    // malo teksta → večji kvadratki, manj stolpcev
-    return {
-      charsPerRow: Math.min(25, Math.max(10, length)),
-      boxSize: 36,
-      fontSize: 16,
-    };
+    return { charsPerRow: Math.min(30, Math.max(10, length)), fontSize: 16 };
   }
-
   if (length <= 700) {
-    // srednje dolg tekst
-    return {
-      charsPerRow: 40,
-      boxSize: 30,
-      fontSize: 14,
-    };
+    return { charsPerRow: 40, fontSize: 14 };
   }
-
-  // zelo dolg tekst
-  return {
-    charsPerRow: 50,
-    boxSize: 26,
-    fontSize: 13,
-  };
+  return { charsPerRow: 50, fontSize: 13 };
 }
 
 export const TextGrid: React.FC<Props> = ({
@@ -51,13 +36,16 @@ export const TextGrid: React.FC<Props> = ({
   selectMode,
   onToggleSelectMode,
   showNgrams,
+  showSuspected,
   onToggleNgrams,
+  onToggleSuspected,
+  pattern,
   onPatternChange,
   patternMatchIndices,
+  suspectedHighlightColors,
 }) => {
-  const { charsPerRow, boxSize, fontSize } = getLayout(text.length);
+  const { charsPerRow, fontSize } = getLayout(text.length);
 
-  // razbij tekst na vrstice po charsPerRow
   const rows: string[] = [];
   for (let i = 0; i < text.length; i += charsPerRow) {
     rows.push(text.slice(i, i + charsPerRow));
@@ -106,6 +94,15 @@ export const TextGrid: React.FC<Props> = ({
           <button
             type="button"
             className={`${styles.smallButton} ${
+              showSuspected ? styles.smallButtonActive : ""
+            }`}
+            onClick={onToggleSuspected}
+          >
+            Suspected words
+          </button>
+          <button
+            type="button"
+            className={`${styles.smallButton} ${
               selectMode ? styles.smallButtonActive : ""
             }`}
             onClick={onToggleSelectMode}
@@ -116,75 +113,87 @@ export const TextGrid: React.FC<Props> = ({
       </div>
 
       <div className={styles.grid}>
-        {rows.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className={styles.row}
-            style={{
-              gridTemplateColumns: `repeat(${Math.min(
-                charsPerRow,
-                row.length || 1
-              )}, minmax(${boxSize}px, 1fr))`,
-            }}
-          >
-            {row.split("").map((ch, offset) => {
-              const globalIndex = rowIndex * charsPerRow + offset;
+        {rows.map((row, rowIndex) => {
+          const letters = row.split("");
+          const empties = Math.max(0, charsPerRow - letters.length);
 
-              if (ch === " ") {
+          return (
+            <div
+              key={rowIndex}
+              className={styles.row}
+              style={{
+                gridTemplateColumns: `repeat(${charsPerRow}, minmax(0, 1fr))`,
+                fontSize: `${fontSize}px`,
+              }}
+            >
+              {letters.map((ch, offset) => {
+                const globalIndex = rowIndex * charsPerRow + offset;
+
+                if (ch === " ") {
+                  return (
+                    <div
+                      key={globalIndex}
+                      className={`${styles.cell} ${styles.spaceBox}`}
+                      title="space"
+                    >
+                      ·
+                    </div>
+                  );
+                }
+
+                const lower = ch.toLowerCase();
+                const mapped = mapping[lower];
+                const hasMapping = mapped && mapped.length === 1;
+                const displayChar = hasMapping ? mapped : ch;
+
+                const isHovered =
+                  hoveredLetter !== null && lower === hoveredLetter;
+                const isMatch = patternMatchIndices.has(globalIndex);
+
+                const highlightColor = suspectedHighlightColors?.[globalIndex];
+
+                const title = hasMapping ? `${ch} → ${mapped}` : ch;
+
+                const classNames = [
+                  styles.cell,
+                  styles.box,
+                  hasMapping ? styles.boxMapped : "",
+                  isHovered ? styles.boxHover : "",
+                  isMatch ? styles.boxMatch : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+
                 return (
                   <div
                     key={globalIndex}
-                    className={styles.spaceBox}
-                    style={{ height: boxSize, minWidth: boxSize }}
-                    title="space"
+                    className={classNames}
+                    title={title}
+                    style={{
+                      borderBottom: highlightColor
+                        ? `3px solid ${highlightColor}`
+                        : undefined,
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      beginSelection(globalIndex);
+                    }}
+                    onMouseEnter={() => extendSelection(globalIndex)}
                   >
-                    ·
+                    {displayChar}
                   </div>
                 );
-              }
+              })}
 
-              const lower = ch.toLowerCase();
-              const mapped = mapping[lower];
-              const hasMapping = mapped && mapped.length === 1;
-              const displayChar = hasMapping ? mapped : ch;
-
-              const isHovered =
-                hoveredLetter !== null && lower === hoveredLetter;
-              const isMatch = patternMatchIndices.has(globalIndex);
-
-              const title = hasMapping ? `${ch} → ${mapped}` : ch;
-
-              const classNames = [
-                styles.box,
-                hasMapping ? styles.boxMapped : "",
-                isHovered ? styles.boxHover : "",
-                isMatch ? styles.boxMatch : "",
-              ]
-                .filter(Boolean)
-                .join(" ");
-
-              return (
+              {Array.from({ length: empties }).map((_, i) => (
                 <div
-                  key={globalIndex}
-                  className={classNames}
-                  title={title}
-                  style={{
-                    height: boxSize,
-                    minWidth: boxSize,
-                    fontSize: `${fontSize}px`,
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    beginSelection(globalIndex);
-                  }}
-                  onMouseEnter={() => extendSelection(globalIndex)}
-                >
-                  {displayChar}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                  key={`empty-${rowIndex}-${i}`}
+                  className={styles.emptyCell}
+                />
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -36,7 +36,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  user-select: none; /* brez normalnega highlighta */
+  user-select: none;
 }
 
 .row {
@@ -45,12 +45,20 @@
   user-select: none;
 }
 
-.box {
+/* base cell styles */
+
+.cell {
+  aspect-ratio: 1 / 1;
   border-radius: 0.4rem;
-  border: 1px solid var(--border-subtle);
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* letter boxes */
+
+.box {
+  border: 1px solid var(--border-subtle);
   background: var(--bg-card);
   color: var(--text-main);
   transition: background 0.15s, border-color 0.15s, transform 0.05s,
@@ -77,13 +85,18 @@
   transform: translateY(-1px);
 }
 
+/* space characters */
+
 .spaceBox {
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.8em;
+}
+
+/* empty filler so last row width is same as others */
+
+.emptyCell {
+  aspect-ratio: 1 / 1;
   border-radius: 0.4rem;
   border: 1px solid transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  user-select: none;
 }

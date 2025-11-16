@@ -5,6 +5,11 @@
   border: 1px solid var(--border-subtle);
 }
 
+.title {
+  margin: 0;
+  cursor: help; /* visual hint that it has a tooltip */
+}
+
 .grid {
   margin-top: 0.5rem;
   display: grid;
@@ -34,15 +39,10 @@
   color: var(--text-main);
   padding: 0.1rem 0;
   font-size: 1.1rem;
+  text-transform: uppercase;
 }
 
 .input:focus {
   outline: none;
   border-bottom-color: var(--accent);
-}
-
-.hint {
-  margin-top: 0.8rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
 }

@@ -6,6 +6,7 @@ interface Props {
   pattern: string;
   matches: PatternMatches;
   onClearPattern: () => void;
+  onAddSuspected: (word: string) => void;
 }
 
 interface NeighborStat {
@@ -19,6 +20,7 @@ export const PatternPanel: React.FC<Props> = ({
   pattern,
   matches,
   onClearPattern,
+  onAddSuspected,
 }) => {
   const occurrences = matches.starts.length;
 
@@ -28,40 +30,59 @@ export const PatternPanel: React.FC<Props> = ({
     matches
   );
 
+  const hasPattern = !!pattern;
+
   return (
     <div className={styles.wrapper}>
-      <h3>Pattern info</h3>
+      <div className={styles.headerRow}>
+        <h3>Pattern info</h3>
+        <div className={styles.headerButtons}>
+          <button
+            type="button"
+            className={styles.smallButton}
+            disabled={!hasPattern}
+            onClick={() => hasPattern && onAddSuspected(pattern)}
+          >
+            Add to suspected
+          </button>
+          <button
+            type="button"
+            className={styles.smallButton}
+            disabled={!hasPattern}
+            onClick={onClearPattern}
+          >
+            Clear selection
+          </button>
+        </div>
+      </div>
 
       <div className={styles.patternBlock}>
         <div className={styles.patternRow}>
-          <span>Selected pattern:</span>
-          <strong>{pattern ? `"${pattern}"` : "—"}</strong>
+          <span className={styles.label}>Selected pattern:</span>
+          <strong className={styles.value}>
+            {hasPattern ? `"${pattern}"` : "—"}
+          </strong>
         </div>
         <div className={styles.patternRow}>
-          <span>Occurrences in text:</span>
-          <strong>{occurrences}</strong>
+          <span className={styles.label}>Occurrences in text:</span>
+          <strong className={styles.value}>{occurrences}</strong>
         </div>
         <p className={styles.hint}>
           Vzorec izbereš tako, da v Text preview z miško potegneš čez črke (kot
           da bi jih označil v brskalniku).
         </p>
-        <button
-          type="button"
-          className={styles.clearButton}
-          onClick={onClearPattern}
-        >
-          Clear selection
-        </button>
       </div>
 
       <div className={styles.neighborBlock}>
         <h4>Most frequent previous letters</h4>
         {beforeStats.length === 0 ? (
-          <p className={styles.empty}>No data.</p>
+          <p className={styles.empty}>
+            {hasPattern ? "No data." : "Select a pattern in the text first."}
+          </p>
         ) : (
           <ul className={styles.list}>
             {beforeStats.map((n) => (
-              <li key={n.letter}>
+              <li key={`before-${n.letter}`} className={styles.listItem}>
                 <span className={styles.letter}>{n.letter}</span>
                 <span className={styles.count}>{n.count}</span>
                 <span className={styles.percent}>
@@ -76,11 +97,13 @@ export const PatternPanel: React.FC<Props> = ({
       <div className={styles.neighborBlock}>
         <h4>Most frequent next letters</h4>
         {afterStats.length === 0 ? (
-          <p className={styles.empty}>No data.</p>
+          <p className={styles.empty}>
+            {hasPattern ? "No data." : "Select a pattern in the text first."}
+          </p>
         ) : (
           <ul className={styles.list}>
             {afterStats.map((n) => (
-              <li key={n.letter}>
+              <li key={`after-${n.letter}`} className={styles.listItem}>
                 <span className={styles.letter}>{n.letter}</span>
                 <span className={styles.count}>{n.count}</span>
                 <span className={styles.percent}>

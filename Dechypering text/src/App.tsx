@@ -9,6 +9,8 @@ import {
 import { LetterStats } from "./components/LetterStats";
 import { PatternPanel } from "./components/PatternPanel";
 import { NgramStats } from "./components/NgramStats";
+import { SuspectedWords } from "./components/SuspectedWords";
+import { useToast } from "./components/ToastContext";
 
 export type Mapping = Record<string, string>;
 
@@ -18,7 +20,12 @@ export interface PatternMatches {
 }
 
 const INITIAL_TEXT =
-  "ČEGLIOGBŽČIHZLGAFRVTERPIDODGAKLŽKŽCŽJŽNŽAVČGDIELGČEGBGOOREVKISVLAVLAVMŽBTGONGROŽČINŽLDGBIMVČVTVLSBIOVNOVČEVLŽLEI..."; // daj svoj full tajnopis
+  "ČEGLIOGBŽČIHZLGAFRVTERPIDODGAKLŽKŽCŽJŽNŽAVČGDIELGČEGBGOOREVKISVLAVLAVMŽBTGONGROŽČINŽLDGBIMVČVTVLSBIOVNOVČEVLŽLEI...";
+
+const MAX_SUSPECTED_LENGTH = 25;
+
+// colors for suspected words (cycled if more than 5)
+const SUSPECT_COLORS = ["#f97316", "#22c55e", "#eab308", "#ec4899", "#06b6d4"];
 
 function findPatternMatches(text: string, pattern: string): PatternMatches {
   const result: PatternMatches = { starts: [], indices: new Set<number>() };
@@ -33,7 +40,7 @@ function findPatternMatches(text: string, pattern: string): PatternMatches {
     let ok = true;
     for (let j = 0; j < plen; j++) {
       const pc = p[j];
-      if (pc === "_") continue; // wildcard
+      if (pc === "_") continue;
       if (t[i + j] !== pc) {
         ok = false;
         break;
@@ -49,9 +56,27 @@ function findPatternMatches(text: string, pattern: string): PatternMatches {
   return result;
 }
 
-type PanelType = "none" | "pattern" | "ngrams";
+// exact matches, no wildcards, used for suspected words
+function findExactMatches(text: string, pattern: string): number[] {
+  const res: number[] = [];
+  const t = text.toLowerCase();
+  const p = pattern.toLowerCase();
+  const plen = p.length;
+  if (!plen) return res;
+
+  for (let i = 0; i <= t.length - plen; i++) {
+    if (t.slice(i, i + plen) === p) {
+      res.push(i);
+    }
+  }
+  return res;
+}
+
+type PanelType = "none" | "pattern" | "ngrams" | "suspected";
 
 function App() {
+  const notify = useToast();
+
   const [text, setText] = useState<string>(INITIAL_TEXT);
   const [mapping, setMapping] = useState<Mapping>({});
   const [hoveredLetter, setHoveredLetter] = useState<string | null>(null);
@@ -64,6 +89,8 @@ function App() {
   });
 
   const [showNgrams, setShowNgrams] = useState(false);
+  const [showSuspected, setShowSuspected] = useState(false);
+  const [suspectedWords, setSuspectedWords] = useState<string[]>([]);
 
   const handleMappingChange = (from: string, to: string) => {
     setMapping((prev) => ({
@@ -79,10 +106,12 @@ function App() {
   const toggleSelectMode = () => {
     setSelectMode((prev) => {
       const next = !prev;
-      if (!next) {
-        setPattern(""); // ko ugasneš selection, skrij pattern panel
+      if (next) {
+        setShowNgrams(false);
+        setShowSuspected(false);
+      } else {
+        setPattern("");
       }
-      setShowNgrams(false); // ne dovoli n-gram + pattern hkrati
       return next;
     });
   };
@@ -91,7 +120,7 @@ function App() {
     setShowNgrams((prev) => {
       const next = !prev;
       if (next) {
-        // ko prižgeš n-gram, ugasni pattern mode
+        setShowSuspected(false);
         setSelectMode(false);
         setPattern("");
       }
@@ -99,12 +128,67 @@ function App() {
     });
   };
 
-  // kdo je trenutno na desnem panelu
-  const panelType: PanelType = showNgrams
-    ? "ngrams"
-    : selectMode && pattern.length > 0
-    ? "pattern"
-    : "none";
+  const toggleSuspected = () => {
+    setShowSuspected((prev) => {
+      const next = !prev;
+      if (next) {
+        setShowNgrams(false);
+        setSelectMode(false);
+        setPattern("");
+      }
+      return next;
+    });
+  };
+
+  const handleAddSuspected = (word: string) => {
+    const trimmed = word.trim();
+    if (!trimmed) {
+      notify.error("Cannot add empty word.");
+      return;
+    }
+
+    if (trimmed.length > MAX_SUSPECTED_LENGTH) {
+      notify.error(
+        `Word is too long (max ${MAX_SUSPECTED_LENGTH} characters).`
+      );
+      return;
+    }
+
+    if (suspectedWords.includes(trimmed)) {
+      notify.error("This word is already in suspected words.");
+      return;
+    }
+
+    setSuspectedWords((prev) => [...prev, trimmed]);
+    notify.success(`Added "${trimmed}" to suspected words.`);
+  };
+
+  const handleRemoveSuspected = (word: string) => {
+    setSuspectedWords((prev) => prev.filter((w) => w !== word));
+    notify.success(`Removed "${word}" from suspected words.`);
+  };
+
+  // colors per suspected word (same order)
+  const suspectedColors = suspectedWords.map(
+    (_, idx) => SUSPECT_COLORS[idx % SUSPECT_COLORS.length]
+  );
+
+  // map of index -> color for underlines in Text preview
+  const suspectedHighlightColors: Record<number, string> = {};
+  suspectedWords.forEach((word, wordIdx) => {
+    const color = suspectedColors[wordIdx];
+    const starts = findExactMatches(text, word);
+    starts.forEach((start) => {
+      for (let i = 0; i < word.length; i++) {
+        suspectedHighlightColors[start + i] = color;
+      }
+    });
+  });
+
+  let panelType: PanelType = "none";
+  if (showNgrams) panelType = "ngrams";
+  else if (showSuspected) panelType = "suspected";
+  else if (selectMode) panelType = "pattern";
 
   const leftClass = panelType === "none" ? styles.fullWidth : styles.topLeft;
 
@@ -122,10 +206,13 @@ function App() {
               selectMode={selectMode}
               onToggleSelectMode={toggleSelectMode}
               showNgrams={showNgrams}
+              showSuspected={showSuspected}
               onToggleNgrams={toggleNgrams}
+              onToggleSuspected={toggleSuspected}
               pattern={pattern}
               onPatternChange={setPattern}
               patternMatchIndices={patternMatches.indices}
+              suspectedHighlightColors={suspectedHighlightColors}
             />
           </div>
 
@@ -136,6 +223,7 @@ function App() {
                 pattern={pattern}
                 matches={patternMatches}
                 onClearPattern={() => setPattern("")}
+                onAddSuspected={handleAddSuspected}
               />
             </div>
           )}
@@ -143,6 +231,17 @@ function App() {
           {panelType === "ngrams" && (
             <div className={styles.topRight}>
               <NgramStats text={text} />
+            </div>
+          )}
+
+          {panelType === "suspected" && (
+            <div className={styles.topRight}>
+              <SuspectedWords
+                words={suspectedWords}
+                mapping={mapping}
+                onRemoveWord={handleRemoveSuspected}
+                colors={suspectedColors}
+              />
             </div>
           )}
         </div>
