@@ -10,6 +10,12 @@
   cursor: help; /* visual hint that it has a tooltip */
 }
 
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .grid {
   margin-top: 0.5rem;
   display: grid;
@@ -45,4 +51,22 @@
 .input:focus {
   outline: none;
   border-bottom-color: var(--accent);
+}
+
+.clearButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0.25rem 0.45rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  color: var(--text-main);
+  border-color: var(--accent);
 }

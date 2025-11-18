@@ -7,7 +7,8 @@
   color: var(--text-main);
   text-align: left;
   cursor: pointer;
-  font-size: 0.95rem;
+  /* larger, more readable text for the compact bar */
+  font-size: 1.05rem;
 }
 
 .bar:hover {
@@ -29,8 +30,9 @@
 }
 
 .modal {
-  width: min(900px, 95vw);
-  max-height: 90vh;
+  /* slightly wider modal and taller so textarea isn't cramped */
+  width: min(1100px, 95vw);
+  max-height: 92vh;
   background: var(--bg-card);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem 1.25rem;
@@ -42,14 +44,18 @@
 
 .textarea {
   resize: vertical;
-  min-height: 200px;
-  max-height: 60vh;
-  padding: 0.5rem;
+  /* taller default height for better editing */
+  min-height: 320px;
+  max-height: 75vh;
+  padding: 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid var(--border-strong);
   background: var(--bg-card);
   color: var(--text-main);
   font-family: monospace;
+  /* larger monospace for readability */
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .actions {
@@ -59,12 +65,14 @@
 }
 
 .actions button {
-  padding: 0.4rem 0.8rem;
+  /* larger click targets and more comfortable padding */
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--border-subtle);
   cursor: pointer;
   background: var(--bg-card);
   color: var(--text-main);
+  font-size: 0.98rem;
 }
 
 .save {

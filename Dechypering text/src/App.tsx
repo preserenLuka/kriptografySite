@@ -81,6 +81,7 @@ function App() {
               suspectedSpacePositions={suspectedSpaceSet}
               onAddSpace={handleAddSpace}
               onRemoveSpace={handleRemoveSpace}
+              onMappingChange={handleMappingChange} // now types match
             />
           </div>
 

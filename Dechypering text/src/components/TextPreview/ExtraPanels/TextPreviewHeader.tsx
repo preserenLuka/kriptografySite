@@ -9,6 +9,11 @@ interface Props {
   onToggleSuspected: () => void;
   onToggleSpaceMode: () => void;
   onToggleSelectMode: () => void;
+
+  onAutoSolve: () => void;
+  isSolving: boolean;
+
+  onDownloadText: () => void;
 }
 
 export const TextPreviewHeader: React.FC<Props> = ({
@@ -20,6 +25,9 @@ export const TextPreviewHeader: React.FC<Props> = ({
   onToggleSuspected,
   onToggleSpaceMode,
   onToggleSelectMode,
+  onAutoSolve,
+  isSolving,
+  onDownloadText,
 }) => {
   return (
     <div className={styles.headerRow}>
@@ -31,35 +39,62 @@ export const TextPreviewHeader: React.FC<Props> = ({
             showNgrams ? styles.smallButtonActive : ""
           }`}
           onClick={onToggleNgrams}
+          disabled={isSolving}
         >
           N-gram stats
         </button>
+
         <button
           type="button"
           className={`${styles.smallButton} ${
             showSuspected ? styles.smallButtonActive : ""
           }`}
           onClick={onToggleSuspected}
+          disabled={isSolving}
         >
           Suspected words
         </button>
+
         <button
           type="button"
           className={`${styles.smallButton} ${
             spaceMode ? styles.smallButtonActive : ""
           }`}
           onClick={onToggleSpaceMode}
+          disabled={isSolving}
         >
           Suspected spaces
         </button>
+
         <button
           type="button"
           className={`${styles.smallButton} ${
             selectMode ? styles.smallButtonActive : ""
           }`}
           onClick={onToggleSelectMode}
+          disabled={isSolving}
         >
           Selection mode: {selectMode ? "ON" : "OFF"}
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.smallButton} ${
+            isSolving ? styles.smallButtonActive : ""
+          }`}
+          onClick={onAutoSolve}
+          disabled={isSolving}
+        >
+          {isSolving ? "Auto-solving…" : "Auto-solve"}
+        </button>
+
+        <button
+          type="button"
+          className={styles.smallButton}
+          onClick={onDownloadText}
+          disabled={isSolving}
+        >
+          Download .txt
         </button>
       </div>
     </div>

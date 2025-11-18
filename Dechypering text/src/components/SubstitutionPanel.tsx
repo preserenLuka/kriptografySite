@@ -1,6 +1,7 @@
 import styles from "./SubstitutionPanel.module.css";
 import type { Mapping } from "../state/cipherTypes";
 import { useToast } from "../utils/ToastContext";
+import { FiTrash2 } from "react-icons/fi";
 
 export const SLO_ALPHABET = [
   "a",
@@ -64,16 +65,32 @@ export const SubstitutionPanel: React.FC<Props> = ({
     onChangeMapping(from, lower);
   };
 
+  const handleClearAll = () => {
+    SLO_ALPHABET.forEach((letter) => onChangeMapping(letter, ""));
+    notify.info("Cleared all substitutions.");
+  };
+
   return (
     <div className={styles.panel}>
-      <h3
-        className={styles.title}
-        title={
-          'Type the replacement letter below (e.g. under "A" you type "E") and every A in the text will change to E.'
-        }
-      >
-        Substitution
-      </h3>
+      <div className={styles.headerRow}>
+        <h3
+          className={styles.title}
+          title={
+            'Type the replacement letter below (e.g. under "A" you type "E") and every A in the text will change to E.'
+          }
+        >
+          Substitution
+        </h3>
+        <button
+          type="button"
+          className={styles.clearButton}
+          title="Clear all substitutions"
+          aria-label="Clear all substitutions"
+          onClick={handleClearAll}
+        >
+          <FiTrash2 />
+        </button>
+      </div>
 
       <div className={styles.grid}>
         {SLO_ALPHABET.map((letter) => (

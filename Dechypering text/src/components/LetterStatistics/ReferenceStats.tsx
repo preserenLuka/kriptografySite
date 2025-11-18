@@ -128,7 +128,11 @@ export const ReferenceStats: React.FC<Props> = ({
         <div className={styles.bars}>
           {data.map((s, idx) => {
             const isClosest = closestIndex === idx && highlightPercent != null;
+            // When a percent-based highlight is active (from hovering the left chart),
+            // only show the "closest percent" highlight in the reference chart.
+            // The "same letter" highlight is suppressed to avoid double-highlighting.
             const isSameLetter =
+              highlightPercent == null &&
               hoverLetter &&
               hoverLetter.toUpperCase() === s.letter.toUpperCase();
 

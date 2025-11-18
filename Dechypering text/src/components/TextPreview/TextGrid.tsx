@@ -3,6 +3,8 @@ import styles from "./TextGrid.module.css";
 import type { Mapping } from "../../state/cipherTypes";
 import { TextPreviewHeader } from "./ExtraPanels/TextPreviewHeader";
 import { TextGridRow } from "./TextGridRow";
+import { autoSolve, applyMapping } from "../../utils/solver";
+// SLO_ALPHABET not needed here after solver API change
 
 interface Props {
   text: string;
@@ -25,6 +27,9 @@ interface Props {
   suspectedSpacePositions: Set<number>;
   onAddSpace: (index: number) => void;
   onRemoveSpace: (index: number) => void;
+
+  // use the same signature as handleMappingChange(from, to)
+  onMappingChange: (from: string, to: string) => void;
 }
 
 // layout for whole text
@@ -56,6 +61,7 @@ export const TextGrid: React.FC<Props> = ({
   suspectedSpacePositions,
   onAddSpace,
   onRemoveSpace,
+  onMappingChange,
 }) => {
   const { charsPerRow, fontSize } = getLayout(text.length);
 
@@ -66,6 +72,9 @@ export const TextGrid: React.FC<Props> = ({
 
   const [isSelecting, setIsSelecting] = useState(false);
   const [startIndex, setStartIndex] = useState<number | null>(null);
+
+  // ali auto-solver trenutno dela
+  const [isSolving, setIsSolving] = useState(false);
 
   useEffect(() => {
     const handleUp = () => {
@@ -90,6 +99,53 @@ export const TextGrid: React.FC<Props> = ({
     onPatternChange(text.slice(from, to + 1));
   };
 
+  const handleAutoSolve = () => {
+    if (!text || text.length === 0) return;
+    if (isSolving) return;
+
+    setIsSolving(true);
+
+    // pustimo Reactu, da rerenderja (da vidiš "Auto-solving…"),
+    // potem pa v setTimeout blokiramo z dejanskim računanjem
+    setTimeout(() => {
+      try {
+        const solvedMapping: Mapping = autoSolve(text, {
+          iterations: 20000,
+          restarts: 8,
+          startTemp: 1.8,
+        });
+
+        Object.entries(solvedMapping).forEach(([cipher, plain]) => {
+          if (plain) {
+            onMappingChange(cipher, plain);
+          }
+        });
+      } catch (err) {
+        console.error("Auto-solver failed:", err);
+      } finally {
+        setIsSolving(false);
+      }
+    }, 0);
+  };
+
+  const handleDownloadText = () => {
+    // dešifriran tekst glede na trenutni mapping
+    const plaintext = applyMapping(text, mapping);
+
+    const blob = new Blob([plaintext], {
+      type: "text/plain;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "decrypted_text.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className={styles.wrapper}>
       <TextPreviewHeader
@@ -101,6 +157,9 @@ export const TextGrid: React.FC<Props> = ({
         onToggleSuspected={onToggleSuspected}
         onToggleSpaceMode={onToggleSpaceMode}
         onToggleSelectMode={onToggleSelectMode}
+        onAutoSolve={handleAutoSolve}
+        isSolving={isSolving}
+        onDownloadText={handleDownloadText}
       />
 
       <div className={styles.grid}>
